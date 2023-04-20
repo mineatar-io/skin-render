@@ -4,6 +4,7 @@ import (
 	"image"
 )
 
+// RenderBackBody renders a 2-dimensional image of the back of a Minecraft player's skin.
 func RenderBackBody(skin *image.NRGBA, opts Options) *image.NRGBA {
 	slimOffset := getSlimOffset(opts.Slim)
 

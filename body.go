@@ -2,6 +2,7 @@ package skin
 
 import "image"
 
+// RenderBody renders a 3-dimensional image of the full body of a Minecraft player's skin.
 func RenderBody(skin *image.NRGBA, opts Options) *image.NRGBA {
 	scaleDouble := float64(opts.Scale)
 	slimOffset := getSlimOffset(opts.Slim)

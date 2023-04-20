@@ -2,6 +2,7 @@ package skin
 
 import (
 	"bytes"
+	// Used to embed the default skin images as a variable
 	_ "embed"
 	"image"
 	"image/draw"
@@ -64,6 +65,20 @@ func init() {
 	}
 }
 
+// IsOldSkin returns a boolean which will be true if the skin is a legacy skin, which contains missing information about the skin overlay.
+func IsOldSkin(img *image.NRGBA) bool {
+	return img.Bounds().Max.Y < 64
+}
+
+// IsSlimFromUUID returns whether the skin is a slim variant from the UUID.
+// Credit: https://github.com/LapisBlue/Lapitar/blob/55ede80ce4ebb5ecc2b968164afb40f61b4cc509/mc/uuid.go#L23
+func IsSlimFromUUID(uuid string) bool {
+	uuid = strings.ReplaceAll(uuid, "-", "")
+
+	return (isEven(uuid[7]) != isEven(uuid[16+7])) != (isEven(uuid[15]) != isEven(uuid[16+15]))
+}
+
+// GetDefaultSkin returns the default skin for either a regular or slim variant of a Minecraft skin.
 func GetDefaultSkin(slim bool) *image.NRGBA {
 	if slim {
 		return alexSkin
@@ -114,10 +129,6 @@ func removeTransparency(img *image.NRGBA) *image.NRGBA {
 	}
 
 	return output
-}
-
-func IsOldSkin(img *image.NRGBA) bool {
-	return img.Bounds().Max.Y < 64
 }
 
 func composite(bottom, top *image.NRGBA, x, y int) *image.NRGBA {
@@ -205,8 +216,7 @@ func compositeTransform(bottom, top *image.NRGBA, mat matrix3, x, y float64) *im
 	return output
 }
 
-// Credit: https://github.com/LapisBlue/Lapitar/blob/master/mc/uuid.go
-
+// Credit: https://github.com/LapisBlue/Lapitar/blob/55ede80ce4ebb5ecc2b968164afb40f61b4cc509/mc/uuid.go#L23
 func isEven(c uint8) bool {
 	switch {
 	case c >= '0' && c <= '9':
@@ -216,10 +226,4 @@ func isEven(c uint8) bool {
 	default:
 		panic("Invalid digit " + string(c))
 	}
-}
-
-func IsSlimFromUUID(uuid string) bool {
-	uuid = strings.ReplaceAll(uuid, "-", "")
-
-	return (isEven(uuid[7]) != isEven(uuid[16+7])) != (isEven(uuid[15]) != isEven(uuid[16+15]))
 }

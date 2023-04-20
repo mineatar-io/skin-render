@@ -4,6 +4,7 @@ import (
 	"image"
 )
 
+// RenderLeftBody renders a 2-dimensional image of the left side of a Minecraft player's skin.
 func RenderLeftBody(skin *image.NRGBA, opts Options) *image.NRGBA {
 	slimOffset := getSlimOffset(opts.Slim)
 

@@ -2,6 +2,7 @@ package skin
 
 import "image"
 
+// RenderHead renders a 3-dimensional image of the head of a Minecraft player's skin.
 func RenderHead(skin *image.NRGBA, opts Options) *image.NRGBA {
 	scaleDouble := float64(opts.Scale)
 	output := image.NewNRGBA(image.Rect(0, 0, 16*opts.Scale, 19*opts.Scale-int(scaleDouble/2.0)-1))

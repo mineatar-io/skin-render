@@ -4,6 +4,7 @@ import (
 	"image"
 )
 
+// RenderFrontBody renders a 2-dimensional image of the front of a Minecraft player's skin.
 func RenderFrontBody(skin *image.NRGBA, opts Options) *image.NRGBA {
 	slimOffset := getSlimOffset(opts.Slim)
 
