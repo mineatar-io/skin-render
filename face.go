@@ -3,7 +3,7 @@ package skin
 import "image"
 
 // RenderFace renders a 2-dimensional image of the face of a Minecraft player's skin.
-func RenderFace(skin *image.NRGBA, opts Options) *image.NRGBA {
+func RenderFace(skin image.Image, opts Options) image.Image {
 	output := removeTransparency(extract(skin, 8, 8, 8, 8))
 
 	if opts.Overlay && !IsOldSkin(skin) {

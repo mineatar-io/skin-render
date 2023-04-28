@@ -5,16 +5,16 @@ import (
 )
 
 // RenderFrontBody renders a 2-dimensional image of the front of a Minecraft player's skin.
-func RenderFrontBody(skin *image.NRGBA, opts Options) *image.NRGBA {
+func RenderFrontBody(skin image.Image, opts Options) image.Image {
 	slimOffset := getSlimOffset(opts.Slim)
 
 	var (
-		frontHead  *image.NRGBA = removeTransparency(extract(skin, 8, 8, 8, 8))
-		frontTorso *image.NRGBA = removeTransparency(extract(skin, 20, 20, 8, 12))
-		leftArm    *image.NRGBA = nil
-		rightArm   *image.NRGBA = removeTransparency(extract(skin, 44, 20, 4-slimOffset, 12))
-		leftLeg    *image.NRGBA = nil
-		rightLeg   *image.NRGBA = removeTransparency(extract(skin, 4, 20, 4, 12))
+		frontHead  image.Image = removeTransparency(extract(skin, 8, 8, 8, 8))
+		frontTorso image.Image = removeTransparency(extract(skin, 20, 20, 8, 12))
+		leftArm    image.Image = nil
+		rightArm   image.Image = removeTransparency(extract(skin, 44, 20, 4-slimOffset, 12))
+		leftLeg    image.Image = nil
+		rightLeg   image.Image = removeTransparency(extract(skin, 4, 20, 4, 12))
 	)
 
 	if IsOldSkin(skin) {
@@ -36,7 +36,7 @@ func RenderFrontBody(skin *image.NRGBA, opts Options) *image.NRGBA {
 		}
 	}
 
-	output := image.NewNRGBA(image.Rect(0, 0, 16, 32))
+	var output image.Image = image.NewNRGBA(image.Rect(0, 0, 16, 32))
 
 	// Face
 	output = composite(output, frontHead, 4, 0)

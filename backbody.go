@@ -5,16 +5,16 @@ import (
 )
 
 // RenderBackBody renders a 2-dimensional image of the back of a Minecraft player's skin.
-func RenderBackBody(skin *image.NRGBA, opts Options) *image.NRGBA {
+func RenderBackBody(skin image.Image, opts Options) image.Image {
 	slimOffset := getSlimOffset(opts.Slim)
 
 	var (
-		backHead     *image.NRGBA = removeTransparency(extract(skin, 24, 8, 8, 8))
-		backTorso    *image.NRGBA = removeTransparency(extract(skin, 32, 20, 8, 12))
-		backLeftArm  *image.NRGBA = nil
-		backRightArm *image.NRGBA = removeTransparency(extract(skin, 52-slimOffset, 20, 4-slimOffset, 12))
-		backLeftLeg  *image.NRGBA = nil
-		backRightLeg *image.NRGBA = removeTransparency(extract(skin, 12, 20, 4, 12))
+		backHead     image.Image = removeTransparency(extract(skin, 24, 8, 8, 8))
+		backTorso    image.Image = removeTransparency(extract(skin, 32, 20, 8, 12))
+		backLeftArm  image.Image = nil
+		backRightArm image.Image = removeTransparency(extract(skin, 52-slimOffset, 20, 4-slimOffset, 12))
+		backLeftLeg  image.Image = nil
+		backRightLeg image.Image = removeTransparency(extract(skin, 12, 20, 4, 12))
 	)
 
 	if IsOldSkin(skin) {
@@ -36,7 +36,7 @@ func RenderBackBody(skin *image.NRGBA, opts Options) *image.NRGBA {
 		}
 	}
 
-	output := image.NewNRGBA(image.Rect(0, 0, 16, 32))
+	var output image.Image = image.NewNRGBA(image.Rect(0, 0, 16, 32))
 
 	// Face
 	output = composite(output, backHead, 4, 0)

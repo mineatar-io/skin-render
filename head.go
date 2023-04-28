@@ -3,14 +3,15 @@ package skin
 import "image"
 
 // RenderHead renders a 3-dimensional image of the head of a Minecraft player's skin.
-func RenderHead(skin *image.NRGBA, opts Options) *image.NRGBA {
+func RenderHead(skin image.Image, opts Options) image.Image {
 	scaleDouble := float64(opts.Scale)
-	output := image.NewNRGBA(image.Rect(0, 0, 16*opts.Scale, 19*opts.Scale-int(scaleDouble/2.0)-1))
+
+	var output image.Image = image.NewNRGBA(image.Rect(0, 0, 16*opts.Scale, 19*opts.Scale-int(scaleDouble/2.0)-1))
 
 	var (
-		frontHead *image.NRGBA = removeTransparency(extract(skin, 8, 8, 8, 8))
-		topHead   *image.NRGBA = removeTransparency(extract(skin, 8, 0, 8, 8))
-		rightHead *image.NRGBA = removeTransparency(extract(skin, 0, 8, 8, 8))
+		frontHead image.Image = removeTransparency(extract(skin, 8, 8, 8, 8))
+		topHead   image.Image = removeTransparency(extract(skin, 8, 0, 8, 8))
+		rightHead image.Image = removeTransparency(extract(skin, 0, 8, 8, 8))
 	)
 
 	if opts.Overlay && !IsOldSkin(skin) {

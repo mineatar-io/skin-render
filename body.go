@@ -3,25 +3,25 @@ package skin
 import "image"
 
 // RenderBody renders a 3-dimensional image of the full body of a Minecraft player's skin.
-func RenderBody(skin *image.NRGBA, opts Options) *image.NRGBA {
+func RenderBody(skin image.Image, opts Options) image.Image {
 	scaleDouble := float64(opts.Scale)
 	slimOffset := getSlimOffset(opts.Slim)
 
-	output := image.NewNRGBA(image.Rect(0, 0, 20*opts.Scale, 45*opts.Scale+int(scaleDouble*(1.0/16.0))))
+	var output image.Image = image.NewNRGBA(image.Rect(0, 0, 20*opts.Scale, 45*opts.Scale+int(scaleDouble*(1.0/16.0))))
 
 	var (
-		frontHead     *image.NRGBA = removeTransparency(extract(skin, 8, 8, 8, 8))
-		topHead       *image.NRGBA = removeTransparency(extract(skin, 8, 0, 8, 8))
-		rightHead     *image.NRGBA = removeTransparency(extract(skin, 0, 8, 8, 8))
-		frontTorso    *image.NRGBA = removeTransparency(extract(skin, 20, 20, 8, 12))
-		frontLeftArm  *image.NRGBA = nil
-		topLeftArm    *image.NRGBA = nil
-		frontRightArm *image.NRGBA = removeTransparency(extract(skin, 44, 20, 4-slimOffset, 12))
-		topRightArm   *image.NRGBA = removeTransparency(extract(skin, 44, 16, 4-slimOffset, 4))
-		rightRightArm *image.NRGBA = removeTransparency(extract(skin, 40, 20, 4, 12))
-		frontLeftLeg  *image.NRGBA = nil
-		frontRightLeg *image.NRGBA = removeTransparency(extract(skin, 4, 20, 4, 12))
-		rightRightLeg *image.NRGBA = removeTransparency(extract(skin, 0, 20, 4, 12))
+		frontHead     image.Image = removeTransparency(extract(skin, 8, 8, 8, 8))
+		topHead       image.Image = removeTransparency(extract(skin, 8, 0, 8, 8))
+		rightHead     image.Image = removeTransparency(extract(skin, 0, 8, 8, 8))
+		frontTorso    image.Image = removeTransparency(extract(skin, 20, 20, 8, 12))
+		frontLeftArm  image.Image = nil
+		topLeftArm    image.Image = nil
+		frontRightArm image.Image = removeTransparency(extract(skin, 44, 20, 4-slimOffset, 12))
+		topRightArm   image.Image = removeTransparency(extract(skin, 44, 16, 4-slimOffset, 4))
+		rightRightArm image.Image = removeTransparency(extract(skin, 40, 20, 4, 12))
+		frontLeftLeg  image.Image = nil
+		frontRightLeg image.Image = removeTransparency(extract(skin, 4, 20, 4, 12))
+		rightRightLeg image.Image = removeTransparency(extract(skin, 0, 20, 4, 12))
 	)
 
 	if IsOldSkin(skin) {

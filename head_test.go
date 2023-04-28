@@ -1,6 +1,7 @@
 package skin_test
 
 import (
+	"fmt"
 	"image/png"
 	"os"
 	"testing"
@@ -11,43 +12,55 @@ import (
 func TestHeadSteve(t *testing.T) {
 	rawSkin := skin.GetDefaultSkin(false)
 
-	output := skin.RenderHead(rawSkin, skin.Options{
-		Scale:   16,
-		Overlay: true,
-		Slim:    false,
-	})
+	for i := 0; i <= 8; i++ {
+		scale := 1 << i
 
-	f, err := os.OpenFile("head_steve_test.png", os.O_CREATE|os.O_RDWR, 0777)
+		output := skin.RenderHead(rawSkin, skin.Options{
+			Scale:   scale,
+			Overlay: true,
+			Slim:    false,
+		})
 
-	if err != nil {
-		t.Fatal(err)
-	}
+		f, err := os.OpenFile(fmt.Sprintf("head_steve_test_%d.png", scale), os.O_CREATE|os.O_RDWR, 0777)
 
-	defer f.Close()
+		if err != nil {
+			t.Fatal(err)
+		}
 
-	if err = png.Encode(f, output); err != nil {
-		t.Fatal(err)
+		if err = png.Encode(f, output); err != nil {
+			t.Fatal(err)
+		}
+
+		if err = f.Close(); err != nil {
+			t.Fatal(err)
+		}
 	}
 }
 
 func TestHeadAlex(t *testing.T) {
 	rawSkin := skin.GetDefaultSkin(true)
 
-	output := skin.RenderHead(rawSkin, skin.Options{
-		Scale:   16,
-		Overlay: true,
-		Slim:    true,
-	})
+	for i := 0; i <= 8; i++ {
+		scale := 1 << i
 
-	f, err := os.OpenFile("head_alex_test.png", os.O_CREATE|os.O_RDWR, 0777)
+		output := skin.RenderHead(rawSkin, skin.Options{
+			Scale:   scale,
+			Overlay: true,
+			Slim:    true,
+		})
 
-	if err != nil {
-		t.Fatal(err)
-	}
+		f, err := os.OpenFile(fmt.Sprintf("head_alex_test_%d.png", scale), os.O_CREATE|os.O_RDWR, 0777)
 
-	defer f.Close()
+		if err != nil {
+			t.Fatal(err)
+		}
 
-	if err = png.Encode(f, output); err != nil {
-		t.Fatal(err)
+		if err = png.Encode(f, output); err != nil {
+			t.Fatal(err)
+		}
+
+		if err = f.Close(); err != nil {
+			t.Fatal(err)
+		}
 	}
 }

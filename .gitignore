@@ -15,4 +15,17 @@
 # vendor/
 
 # Test output
-*_test.png
+backbody_steve_test_*.png
+backbody_alex_test_*.png
+face_steve_test_*.png
+face_alex_test_*.png
+frontbody_steve_test_*.png
+frontbody_alex_test_*.png
+fullbody_steve_test_*.png
+fullbody_alex_test_*.png
+head_steve_test_*.png
+head_alex_test_*.png
+leftbody_steve_test_*.png
+leftbody_alex_test_*.png
+rightbody_steve_test_*.png
+rightbody_alex_test_*.png

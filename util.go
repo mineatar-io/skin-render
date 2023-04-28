@@ -2,12 +2,14 @@ package skin
 
 import (
 	"bytes"
+	"math"
+
 	// Used to embed the default skin images as a variable
 	_ "embed"
 	"image"
+	"image/color"
 	"image/draw"
 	"image/png"
-	"log"
 	"strings"
 
 	drw "golang.org/x/image/draw"
@@ -34,39 +36,29 @@ var (
 	}
 
 	//go:embed steve.png
-	rawSteveData []byte
+	rawSteveSkinData []byte
 
 	//go:embed alex.png
-	rawAlexData []byte
+	rawAlexSkinData []byte
 
-	steveSkin *image.NRGBA = image.NewNRGBA(image.Rect(0, 0, 64, 64))
-	alexSkin  *image.NRGBA = image.NewNRGBA(image.Rect(0, 0, 64, 64))
+	steveSkin image.Image = nil
+	alexSkin  image.Image = nil
 )
 
 func init() {
-	{
-		rawSteveSkin, err := png.Decode(bytes.NewReader(rawSteveData))
+	var err error
 
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		draw.Draw(steveSkin, rawSteveSkin.Bounds(), rawSteveSkin, image.Pt(0, 0), draw.Src)
+	if steveSkin, err = png.Decode(bytes.NewReader(rawSteveSkinData)); err != nil {
+		panic(err)
 	}
 
-	{
-		rawAlexSkin, err := png.Decode(bytes.NewReader(rawAlexData))
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		draw.Draw(alexSkin, rawAlexSkin.Bounds(), rawAlexSkin, image.Pt(0, 0), draw.Src)
+	if alexSkin, err = png.Decode(bytes.NewReader(rawAlexSkinData)); err != nil {
+		panic(err)
 	}
 }
 
 // IsOldSkin returns a boolean which will be true if the skin is a legacy skin, which contains missing information about the skin overlay.
-func IsOldSkin(img *image.NRGBA) bool {
+func IsOldSkin(img image.Image) bool {
 	return img.Bounds().Max.Y < 64
 }
 
@@ -79,7 +71,7 @@ func IsSlimFromUUID(uuid string) bool {
 }
 
 // GetDefaultSkin returns the default skin for either a regular or slim variant of a Minecraft skin.
-func GetDefaultSkin(slim bool) *image.NRGBA {
+func GetDefaultSkin(slim bool) image.Image {
 	if slim {
 		return alexSkin
 	}
@@ -87,7 +79,7 @@ func GetDefaultSkin(slim bool) *image.NRGBA {
 	return steveSkin
 }
 
-func extract(img *image.NRGBA, x, y, width, height int) *image.NRGBA {
+func extract(img image.Image, x, y, width, height int) image.Image {
 	output := image.NewNRGBA(image.Rect(0, 0, width, height))
 
 	draw.Draw(output, output.Bounds(), img, image.Pt(x, y), draw.Src)
@@ -95,7 +87,7 @@ func extract(img *image.NRGBA, x, y, width, height int) *image.NRGBA {
 	return output
 }
 
-func scale(img *image.NRGBA, scale int) *image.NRGBA {
+func scale(img image.Image, scale int) image.Image {
 	if scale == 1 {
 		return img
 	}
@@ -118,20 +110,29 @@ func scale(img *image.NRGBA, scale int) *image.NRGBA {
 	return output
 }
 
-func removeTransparency(img *image.NRGBA) *image.NRGBA {
+func removeTransparency(img image.Image) image.Image {
 	output := image.NewNRGBA(img.Bounds())
+	bounds := img.Bounds().Size()
 
-	for i, l := 0, len(img.Pix); i < l; i += 4 {
-		output.Pix[i] = img.Pix[i]
-		output.Pix[i+1] = img.Pix[i+1]
-		output.Pix[i+2] = img.Pix[i+2]
-		output.Pix[i+3] = 255
+	for x := 0; x < bounds.X; x++ {
+		for y := 0; y < bounds.Y; y++ {
+			c := img.At(x, y)
+
+			r, g, b, _ := c.RGBA()
+
+			output.Set(x, y, color.NRGBA64{
+				R: uint16(r),
+				G: uint16(g),
+				B: uint16(b),
+				A: math.MaxUint16,
+			})
+		}
 	}
 
 	return output
 }
 
-func composite(bottom, top *image.NRGBA, x, y int) *image.NRGBA {
+func composite(bottom, top image.Image, x, y int) image.Image {
 	output := image.NewNRGBA(bottom.Bounds())
 
 	topBounds := top.Bounds().Max
@@ -142,48 +143,50 @@ func composite(bottom, top *image.NRGBA, x, y int) *image.NRGBA {
 	return output
 }
 
-func flipHorizontal(img *image.NRGBA) *image.NRGBA {
-	data := img.Pix
-	bounds := img.Bounds()
+func flipHorizontal(img image.Image) image.Image {
+	output := image.NewNRGBA(img.Bounds())
+	bounds := img.Bounds().Size()
 
-	output := image.NewNRGBA(bounds)
-
-	for x := 0; x < bounds.Max.X; x++ {
-		for y := 0; y < bounds.Max.Y; y++ {
-			fx := bounds.Max.X - x - 1
-			fi := fx*4 + y*4*bounds.Max.X
-			ix := x*4 + y*4*bounds.Max.X
-
-			for i := 0; i < 4; i++ {
-				output.Pix[ix+i] = data[fi+i]
-			}
+	for x := 0; x < bounds.X; x++ {
+		for y := 0; y < bounds.Y; y++ {
+			output.Set(bounds.X-x-1, y, img.At(x, y))
 		}
 	}
 
 	return output
 }
 
-func fixTransparency(img *image.NRGBA) *image.NRGBA {
-	a := img.Pix[0:4]
+func fixTransparency(img image.Image) image.Image {
+	ir, ig, ib, ia := img.At(0, 0).RGBA()
 
-	if a[3] == 0 {
+	if ia == 0 {
 		return img
 	}
 
 	output := clone(img)
+	bounds := output.Bounds().Size()
 
-	for i, l := 0, len(output.Pix); i < l; i += 4 {
-		if output.Pix[i+0] != a[0] || output.Pix[i+1] != a[1] || output.Pix[i+2] != a[2] || output.Pix[i+3] != a[3] {
-			continue
+	for x := 0; x < bounds.X; x++ {
+		for y := 0; y < bounds.Y; y++ {
+			pr, pg, pb, pa := img.At(x, y).RGBA()
+
+			if pr != ir || pg != ig || pb != ib || pa != ia {
+				continue
+			}
+
+			output.Set(x, y, color.NRGBA64{
+				R: uint16(pr),
+				G: uint16(pg),
+				B: uint16(pb),
+				A: 0,
+			})
 		}
-
-		output.Pix[i+3] = 0
 	}
 
 	return output
 }
 
-func clone(img *image.NRGBA) *image.NRGBA {
+func clone(img image.Image) *image.NRGBA {
 	bounds := img.Bounds()
 	output := image.NewNRGBA(bounds)
 
@@ -200,7 +203,7 @@ func getSlimOffset(slim bool) int {
 	return 0
 }
 
-func compositeTransform(bottom, top *image.NRGBA, mat matrix3, x, y float64) *image.NRGBA {
+func compositeTransform(bottom, top image.Image, mat matrix3, x, y float64) image.Image {
 	output := image.NewNRGBA(bottom.Bounds())
 
 	draw.Draw(output, bottom.Bounds(), bottom, image.Pt(0, 0), draw.Src)
