@@ -5,38 +5,38 @@ import (
 )
 
 // RenderBackBody renders a 2-dimensional image of the back of a Minecraft player's skin.
-func RenderBackBody(skin image.Image, opts Options) image.Image {
+func RenderBackBody(skin *image.NRGBA, opts Options) *image.NRGBA {
 	slimOffset := getSlimOffset(opts.Slim)
 
 	var (
-		backHead     image.Image = removeTransparency(extract(skin, 24, 8, 8, 8))
-		backTorso    image.Image = removeTransparency(extract(skin, 32, 20, 8, 12))
-		backLeftArm  image.Image = nil
-		backRightArm image.Image = removeTransparency(extract(skin, 52-slimOffset, 20, 4-slimOffset, 12))
-		backLeftLeg  image.Image = nil
-		backRightLeg image.Image = removeTransparency(extract(skin, 12, 20, 4, 12))
+		backHead     *image.NRGBA = removeTransparency(extract(skin, HeadBack))
+		backTorso    *image.NRGBA = removeTransparency(extract(skin, TorsoBack))
+		backLeftArm  *image.NRGBA = nil
+		backRightArm *image.NRGBA = removeTransparency(extract(skin, GetRightArmBack(opts.Slim)))
+		backLeftLeg  *image.NRGBA = nil
+		backRightLeg *image.NRGBA = removeTransparency(extract(skin, RightLegBack))
 	)
 
 	if IsOldSkin(skin) {
 		backLeftArm = flipHorizontal(backRightArm)
 		backLeftLeg = flipHorizontal(backRightLeg)
 	} else {
-		backLeftArm = removeTransparency(extract(skin, 44-slimOffset, 52, 4-slimOffset, 12))
-		backLeftLeg = removeTransparency(extract(skin, 28, 52, 4, 12))
+		backLeftArm = removeTransparency(extract(skin, GetLeftArmBack(opts.Slim)))
+		backLeftLeg = removeTransparency(extract(skin, LeftLegBack))
 
 		if opts.Overlay {
 			overlaySkin := fixTransparency(skin)
 
-			backHead = composite(backHead, extract(overlaySkin, 56, 8, 8, 8), 0, 0)
-			backTorso = composite(backTorso, extract(overlaySkin, 32, 36, 8, 12), 0, 0)
-			backLeftArm = composite(backLeftArm, extract(overlaySkin, 60-slimOffset, 52, 4-slimOffset, 64), 0, 0)
-			backRightArm = composite(backRightArm, extract(overlaySkin, 52-slimOffset, 36, 4-slimOffset, 48), 0, 0)
-			backLeftLeg = composite(backLeftLeg, extract(overlaySkin, 12, 52, 8, 64), 0, 0)
-			backRightLeg = composite(backRightLeg, extract(overlaySkin, 12, 36, 8, 48), 0, 0)
+			backHead = composite(backHead, extract(overlaySkin, HeadOverlayBack), 0, 0)
+			backTorso = composite(backTorso, extract(overlaySkin, TorsoOverlayBack), 0, 0)
+			backLeftArm = composite(backLeftArm, extract(overlaySkin, GetLeftArmOverlayBack(opts.Slim)), 0, 0)
+			backRightArm = composite(backRightArm, extract(overlaySkin, GetRightArmOverlayBack(opts.Slim)), 0, 0)
+			backLeftLeg = composite(backLeftLeg, extract(overlaySkin, LeftLegOverlayBack), 0, 0)
+			backRightLeg = composite(backRightLeg, extract(overlaySkin, RightLegOverlayBack), 0, 0)
 		}
 	}
 
-	var output image.Image = image.NewNRGBA(image.Rect(0, 0, 16, 32))
+	var output *image.NRGBA = image.NewNRGBA(image.Rect(0, 0, 16, 32))
 
 	// Face
 	output = composite(output, backHead, 4, 0)

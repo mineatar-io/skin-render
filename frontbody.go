@@ -5,38 +5,38 @@ import (
 )
 
 // RenderFrontBody renders a 2-dimensional image of the front of a Minecraft player's skin.
-func RenderFrontBody(skin image.Image, opts Options) image.Image {
+func RenderFrontBody(skin *image.NRGBA, opts Options) *image.NRGBA {
 	slimOffset := getSlimOffset(opts.Slim)
 
 	var (
-		frontHead  image.Image = removeTransparency(extract(skin, 8, 8, 8, 8))
-		frontTorso image.Image = removeTransparency(extract(skin, 20, 20, 8, 12))
-		leftArm    image.Image = nil
-		rightArm   image.Image = removeTransparency(extract(skin, 44, 20, 4-slimOffset, 12))
-		leftLeg    image.Image = nil
-		rightLeg   image.Image = removeTransparency(extract(skin, 4, 20, 4, 12))
+		frontHead  *image.NRGBA = removeTransparency(extract(skin, HeadFront))
+		frontTorso *image.NRGBA = removeTransparency(extract(skin, TorsoFront))
+		leftArm    *image.NRGBA = nil
+		rightArm   *image.NRGBA = removeTransparency(extract(skin, GetRightArmFront(opts.Slim)))
+		leftLeg    *image.NRGBA = nil
+		rightLeg   *image.NRGBA = removeTransparency(extract(skin, RightLegFront))
 	)
 
 	if IsOldSkin(skin) {
 		leftArm = flipHorizontal(rightArm)
 		leftLeg = flipHorizontal(rightLeg)
 	} else {
-		leftArm = removeTransparency(extract(skin, 36, 52, 4-slimOffset, 12))
-		leftLeg = removeTransparency(extract(skin, 20, 52, 4, 12))
+		leftArm = removeTransparency(extract(skin, GetLeftArmFront(opts.Slim)))
+		leftLeg = removeTransparency(extract(skin, LeftLegFront))
 
 		if opts.Overlay {
 			overlaySkin := fixTransparency(skin)
 
-			frontHead = composite(frontHead, extract(overlaySkin, 40, 8, 8, 8), 0, 0)
-			frontTorso = composite(frontTorso, extract(overlaySkin, 20, 36, 8, 12), 0, 0)
-			leftArm = composite(leftArm, extract(overlaySkin, 52, 52, 4-slimOffset, 64), 0, 0)
-			rightArm = composite(rightArm, extract(overlaySkin, 44, 36, 4-slimOffset, 48), 0, 0)
-			leftLeg = composite(leftLeg, extract(overlaySkin, 4, 52, 4, 12), 0, 0)
-			rightLeg = composite(rightLeg, extract(overlaySkin, 4, 36, 4, 12), 0, 0)
+			frontHead = composite(frontHead, extract(overlaySkin, HeadOverlayFront), 0, 0)
+			frontTorso = composite(frontTorso, extract(overlaySkin, TorsoOverlayFront), 0, 0)
+			leftArm = composite(leftArm, extract(overlaySkin, GetLeftArmOverlayFront(opts.Slim)), 0, 0)
+			rightArm = composite(rightArm, extract(overlaySkin, GetRightArmOverlayFront(opts.Slim)), 0, 0)
+			leftLeg = composite(leftLeg, extract(overlaySkin, LeftLegOverlayFront), 0, 0)
+			rightLeg = composite(rightLeg, extract(overlaySkin, RightLegOverlayFront), 0, 0)
 		}
 	}
 
-	var output image.Image = image.NewNRGBA(image.Rect(0, 0, 16, 32))
+	var output *image.NRGBA = image.NewNRGBA(image.Rect(0, 0, 16, 32))
 
 	// Face
 	output = composite(output, frontHead, 4, 0)

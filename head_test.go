@@ -64,3 +64,15 @@ func TestHeadAlex(t *testing.T) {
 		}
 	}
 }
+
+func BenchmarkHeadSteve(b *testing.B) {
+	rawSkin := skin.GetDefaultSkin(false)
+
+	for n := 0; n < b.N; n++ {
+		skin.RenderHead(rawSkin, skin.Options{
+			Scale:   4,
+			Overlay: true,
+			Slim:    false,
+		})
+	}
+}

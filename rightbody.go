@@ -5,22 +5,22 @@ import (
 )
 
 // RenderRightBody renders a 2-dimensional image of the right side of a Minecraft player's skin.
-func RenderRightBody(skin image.Image, opts Options) image.Image {
+func RenderRightBody(skin *image.NRGBA, opts Options) *image.NRGBA {
 	var (
-		rightHead     image.Image = removeTransparency(extract(skin, 0, 8, 8, 8))
-		rightRightArm image.Image = removeTransparency(extract(skin, 40, 20, 4, 12))
-		rightRightLeg image.Image = removeTransparency(extract(skin, 0, 20, 4, 12))
+		rightHead     *image.NRGBA = removeTransparency(extract(skin, HeadRight))
+		rightRightArm *image.NRGBA = removeTransparency(extract(skin, RightArmRight))
+		rightRightLeg *image.NRGBA = removeTransparency(extract(skin, RightLegRight))
 	)
 
 	if opts.Overlay && !IsOldSkin(skin) {
 		overlaySkin := fixTransparency(skin)
 
-		rightHead = composite(rightHead, extract(overlaySkin, 32, 8, 8, 8), 0, 0)
-		rightRightArm = composite(rightRightArm, extract(overlaySkin, 40, 36, 4, 12), 0, 0)
-		rightRightLeg = composite(rightRightLeg, extract(overlaySkin, 0, 36, 4, 12), 0, 0)
+		rightHead = composite(rightHead, extract(overlaySkin, HeadOverlayRight), 0, 0)
+		rightRightArm = composite(rightRightArm, extract(overlaySkin, RightArmOverlayRight), 0, 0)
+		rightRightLeg = composite(rightRightLeg, extract(overlaySkin, RightLegOverlayRight), 0, 0)
 	}
 
-	var output image.Image = image.NewNRGBA(image.Rect(0, 0, 8, 32))
+	var output *image.NRGBA = image.NewNRGBA(image.Rect(0, 0, 8, 32))
 
 	// Right Head
 	output = composite(output, rightHead, 0, 0)
