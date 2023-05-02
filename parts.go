@@ -108,9 +108,9 @@ var (
 	// LeftArmBackSlim is the back side of the left arm for slim skin models
 	LeftArmBackSlim image.Rectangle = image.Rect(43, 52, 46, 64)
 	// RightLegOverlayTop is the top side of the right leg overlay
-	RightLegOverlayTop image.Rectangle = image.Rect(4, 48, 8, 36)
+	RightLegOverlayTop image.Rectangle = image.Rect(4, 48, 8, 52)
 	// RightLegOverlayBottom is the bottom side of the right leg overlay
-	RightLegOverlayBottom image.Rectangle = image.Rect(8, 48, 12, 36)
+	RightLegOverlayBottom image.Rectangle = image.Rect(8, 48, 12, 52)
 	// RightLegOverlayRight is the right side of the right leg overlay
 	RightLegOverlayRight image.Rectangle = image.Rect(0, 36, 4, 48)
 	// RightLegOverlayFront is the front side of the right leg overlay
@@ -132,13 +132,13 @@ var (
 	// TorsoOverlayBack is the back side of the torso overlay
 	TorsoOverlayBack image.Rectangle = image.Rect(32, 36, 40, 48)
 	// RightArmOverlayTopRegular is the top side of the right arm overlay for regular skin models
-	RightArmOverlayTopRegular image.Rectangle = image.Rect(44, 48, 48, 36) // FIXME
+	RightArmOverlayTopRegular image.Rectangle = image.Rect(44, 48, 48, 52)
 	// RightArmOverlayTopSlim is the top side of the right arm overlay for slim skin models
-	RightArmOverlayTopSlim image.Rectangle = image.Rect(44, 48, 47, 36) // FIXME
+	RightArmOverlayTopSlim image.Rectangle = image.Rect(44, 48, 47, 52)
 	// RightArmOverlayBottomRegular is the bottom side of the right arm overlay for regular skin models
-	RightArmOverlayBottomRegular image.Rectangle = image.Rect(48, 48, 52, 36)
+	RightArmOverlayBottomRegular image.Rectangle = image.Rect(48, 48, 52, 52)
 	// RightArmOverlayBottomSlim is the bottom side of the right arm overlay for slim skin models
-	RightArmOverlayBottomSlim image.Rectangle = image.Rect(47, 48, 50, 36)
+	RightArmOverlayBottomSlim image.Rectangle = image.Rect(47, 48, 50, 52)
 	// RightArmOverlayRight is the right side of the right arm overlay
 	RightArmOverlayRight image.Rectangle = image.Rect(40, 36, 44, 48)
 	// RightArmOverlayFrontRegular is the front side of the right arm overlay for regular skin models

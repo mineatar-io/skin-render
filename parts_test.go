@@ -48,6 +48,10 @@ var (
 		skin.RightArmBottomRegular,
 		skin.LeftArmTopRegular,
 		skin.LeftArmBottomRegular,
+		skin.RightArmOverlayTopRegular,
+		skin.RightArmOverlayBottomRegular,
+		skin.LeftArmOverlayTopRegular,
+		skin.LeftArmOverlayBottomRegular,
 	}
 	armSlimSideComponents []image.Rectangle = []image.Rectangle{
 		skin.RightArmFrontSlim,
@@ -64,6 +68,10 @@ var (
 		skin.RightArmBottomSlim,
 		skin.LeftArmTopSlim,
 		skin.LeftArmBottomSlim,
+		skin.RightArmOverlayTopSlim,
+		skin.RightArmOverlayBottomSlim,
+		skin.LeftArmOverlayTopSlim,
+		skin.LeftArmOverlayBottomSlim,
 	}
 	legSideComponents []image.Rectangle = []image.Rectangle{
 		skin.LeftLegRight,
@@ -84,6 +92,16 @@ var (
 		skin.RightLegOverlayLeft,
 		skin.RightLegOverlayBack,
 	}
+	legTopComponents []image.Rectangle = []image.Rectangle{
+		skin.RightLegTop,
+		skin.RightLegBottom,
+		skin.LeftLegTop,
+		skin.LeftLegBottom,
+		skin.RightLegOverlayTop,
+		skin.RightLegOverlayBottom,
+		skin.LeftLegOverlayTop,
+		skin.LeftLegOverlayBottom,
+	}
 	torsoFrontComponents []image.Rectangle = []image.Rectangle{
 		skin.TorsoFront,
 		skin.TorsoBack,
@@ -102,7 +120,30 @@ var (
 		skin.TorsoOverlayTop,
 		skin.TorsoOverlayBottom,
 	}
+	allComponents [][]image.Rectangle = [][]image.Rectangle{
+		headComponents,
+		armRegularSideComponents,
+		armRegularTopComponents,
+		armSlimSideComponents,
+		armSlimTopComponents,
+		legSideComponents,
+		torsoFrontComponents,
+		torsoSideComponents,
+		torsoTopComponents,
+	}
 )
+
+func TestComponents(t *testing.T) {
+	for kg, group := range allComponents {
+		for kc, c := range group {
+			if c.Max.X > c.Min.X && c.Max.Y > c.Min.Y {
+				continue
+			}
+
+			t.Fatalf("group %d component %d has invalid dimensions: %s", kg, kc, c)
+		}
+	}
+}
 
 func TestHeadComponents(t *testing.T) {
 	for k, c := range headComponents {
@@ -154,13 +195,23 @@ func TestSlimArmTopComponents(t *testing.T) {
 	}
 }
 
-func TestLegComponents(t *testing.T) {
+func TestLegSideComponents(t *testing.T) {
 	for k, c := range legSideComponents {
 		if c.Dx() == 4 && c.Dy() == 12 {
 			continue
 		}
 
 		t.Fatalf("leg side component %d has invalid dimensions: expected=(4,12) received=%s", k, c.Size())
+	}
+}
+
+func TestLegTopComponents(t *testing.T) {
+	for k, c := range legTopComponents {
+		if c.Dx() == 4 && c.Dy() == 4 {
+			continue
+		}
+
+		t.Fatalf("leg top component %d has invalid dimensions: expected=(4,4) received=%s", k, c.Size())
 	}
 }
 
