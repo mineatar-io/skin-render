@@ -12,12 +12,15 @@ func RenderRightBody(skin *image.NRGBA, opts Options) *image.NRGBA {
 		rightRightLeg *image.NRGBA = removeTransparency(extract(skin, RightLegRight))
 	)
 
-	if opts.Overlay && !IsOldSkin(skin) {
+	if opts.Overlay {
 		overlaySkin := fixTransparency(skin)
 
 		rightHead = composite(rightHead, extract(overlaySkin, HeadOverlayRight), 0, 0)
-		rightRightArm = composite(rightRightArm, extract(overlaySkin, RightArmOverlayRight), 0, 0)
-		rightRightLeg = composite(rightRightLeg, extract(overlaySkin, RightLegOverlayRight), 0, 0)
+
+		if !IsOldSkin(skin) {
+			rightRightArm = composite(rightRightArm, extract(overlaySkin, RightArmOverlayRight), 0, 0)
+			rightRightLeg = composite(rightRightLeg, extract(overlaySkin, RightLegOverlayRight), 0, 0)
+		}
 	}
 
 	var output *image.NRGBA = image.NewNRGBA(image.Rect(0, 0, 8, 32))

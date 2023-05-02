@@ -2,12 +2,55 @@ package skin_test
 
 import (
 	"fmt"
+	"image"
+	"image/draw"
 	"image/png"
 	"os"
 	"testing"
 
 	"github.com/mineatar-io/skin-render"
 )
+
+func TestCustomSkin(t *testing.T) {
+	f, err := os.Open("skin.png")
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rawImg, err := png.Decode(f)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err = f.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	rawSkin := image.NewNRGBA(rawImg.Bounds())
+	draw.Draw(rawSkin, rawImg.Bounds(), rawImg, image.ZP, draw.Src)
+
+	res := skin.RenderLeftBody(rawSkin, skin.Options{
+		Scale:   8,
+		Overlay: true,
+		Slim:    false,
+	})
+
+	f, err = os.OpenFile("output.png", os.O_CREATE|os.O_RDWR, 0777)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err = png.Encode(f, res); err != nil {
+		t.Fatal(err)
+	}
+
+	if err = f.Close(); err != nil {
+		t.Fatal(err)
+	}
+}
 
 func TestLeftBodySteve(t *testing.T) {
 	rawSkin := skin.GetDefaultSkin(false)

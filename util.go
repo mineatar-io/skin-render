@@ -47,7 +47,7 @@ func init() {
 	}
 }
 
-// IsOldSkin returns a boolean which will be true if the skin is a legacy skin, which contains missing information about the skin overlay.
+// IsOldSkin returns a boolean which will be true if the skin is a legacy skin, which contains missing information about the skin overlay except for the head.
 func IsOldSkin(img image.Image) bool {
 	return img.Bounds().Dy() < 64
 }
@@ -271,7 +271,7 @@ func rotate90(img *image.NRGBA) *image.NRGBA {
 			index := y*img.Stride + x*4
 			inputColor := img.Pix[index : index+4]
 
-			index = int(x)*img.Stride + int(y)*4 // Intentionally flipped X and Y
+			index = int(x)*output.Stride + int(y)*4 // Intentionally flipped X and Y
 			output.Pix[index] = inputColor[0]
 			output.Pix[index+1] = inputColor[1]
 			output.Pix[index+2] = inputColor[2]
@@ -291,7 +291,7 @@ func rotate270(img *image.NRGBA) *image.NRGBA {
 			index := y*img.Stride + x*4
 			inputColor := img.Pix[index : index+4]
 
-			index = (bounds.X-int(x)-1)*img.Stride + int(y)*4 // Intentionally flipped X and Y
+			index = (bounds.X-int(x)-1)*output.Stride + int(y)*4 // Intentionally flipped X and Y
 			output.Pix[index] = inputColor[0]
 			output.Pix[index+1] = inputColor[1]
 			output.Pix[index+2] = inputColor[2]
