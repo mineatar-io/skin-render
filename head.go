@@ -9,7 +9,7 @@ import (
 func RenderHead(skin *image.NRGBA, opts Options) *image.NRGBA {
 	scaleDouble := float64(opts.Scale)
 
-	var output *image.NRGBA = image.NewNRGBA(image.Rect(0, 0, 13*opts.Scale+int(math.Ceil(scaleDouble*0.86603)), 16*opts.Scale))
+	var output *image.NRGBA = image.NewNRGBA(image.Rect(0, 0, 13*opts.Scale+int(math.Floor(scaleDouble*0.855)), 16*opts.Scale))
 
 	// Front Head
 	output = compositeTransform(output, scale(removeTransparency(extract(skin, HeadFront)), opts.Scale), frontMatrix, 8*scaleDouble, 12*scaleDouble)
