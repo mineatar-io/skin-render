@@ -74,14 +74,14 @@ func extract(img *image.NRGBA, r image.Rectangle) *image.NRGBA {
 
 	for x := r.Min.X; x < r.Max.X; x++ {
 		for y := r.Min.Y; y < r.Max.Y; y++ {
-			inputIndex := img.PixOffset(x, y)
-			inputColor := img.Pix[inputIndex : inputIndex+4]
+			index := y*img.Stride + x*4
+			inputColor := img.Pix[index : index+4]
 
-			outputIndex := output.PixOffset(x-r.Min.X, y-r.Min.Y)
-			output.Pix[outputIndex] = inputColor[0]
-			output.Pix[outputIndex+1] = inputColor[1]
-			output.Pix[outputIndex+2] = inputColor[2]
-			output.Pix[outputIndex+3] = inputColor[3]
+			index = (y-r.Min.Y)*output.Stride + (x-r.Min.X)*4
+			output.Pix[index] = inputColor[0]
+			output.Pix[index+1] = inputColor[1]
+			output.Pix[index+2] = inputColor[2]
+			output.Pix[index+3] = inputColor[3]
 		}
 	}
 
@@ -98,16 +98,16 @@ func scale(img *image.NRGBA, scale int) *image.NRGBA {
 
 	for x := 0; x < bounds.X; x++ {
 		for y := 0; y < bounds.Y; y++ {
-			inputIndex := img.PixOffset(x, y)
-			color := img.Pix[inputIndex : inputIndex+4]
+			i := y*img.Stride + x*4
+			color := img.Pix[i : i+4]
 
 			for sx := 0; sx < scale; sx++ {
 				for sy := 0; sy < scale; sy++ {
-					outputIndex := output.PixOffset(x*scale+sx, y*scale+sy)
-					output.Pix[outputIndex] = color[0]
-					output.Pix[outputIndex+1] = color[1]
-					output.Pix[outputIndex+2] = color[2]
-					output.Pix[outputIndex+3] = color[3]
+					i = (y*scale+sy)*output.Stride + (x*scale+sx)*4
+					output.Pix[i] = color[0]
+					output.Pix[i+1] = color[1]
+					output.Pix[i+2] = color[2]
+					output.Pix[i+3] = color[3]
 				}
 			}
 		}
@@ -126,12 +126,33 @@ func removeTransparency(img *image.NRGBA) *image.NRGBA {
 	return output
 }
 
-func composite(bottom, top *image.NRGBA, x, y int) *image.NRGBA {
+func composite(bottom, top *image.NRGBA, dx, dy int) *image.NRGBA {
 	output := clone(bottom)
 
-	topBounds := top.Bounds().Size()
+	outputBounds := output.Bounds()
+	srcBounds := top.Bounds()
 
-	draw.Draw(output, image.Rect(0, 0, topBounds.X+x, topBounds.Y+y), top, image.Pt(-x, -y), draw.Over)
+	for x := srcBounds.Min.X; x < srcBounds.Max.X; x++ {
+		for y := srcBounds.Min.Y; y < srcBounds.Max.Y; y++ {
+			if dx+x < outputBounds.Min.X || dy+y < outputBounds.Min.Y || dx+x >= outputBounds.Max.X || dy+y >= outputBounds.Max.Y {
+				continue
+			}
+
+			index := y*top.Stride + x*4
+			sourceColor := top.Pix[index : index+4]
+			sourceAlpha := uint32(sourceColor[3]) * 0x101
+
+			index = (dy+y)*output.Stride + (dx+x)*4
+			outputColor := output.Pix[index : index+4]
+
+			alphaOffset := ((1<<16 - 1) - sourceAlpha) * 0x101
+
+			outputColor[0] = uint8((uint32(outputColor[0])*alphaOffset/(1<<16-1) + (uint32(sourceColor[0]) * sourceAlpha / 0xff)) >> 8)
+			outputColor[1] = uint8((uint32(outputColor[1])*alphaOffset/(1<<16-1) + (uint32(sourceColor[1]) * sourceAlpha / 0xff)) >> 8)
+			outputColor[2] = uint8((uint32(outputColor[2])*alphaOffset/(1<<16-1) + (uint32(sourceColor[2]) * sourceAlpha / 0xff)) >> 8)
+			outputColor[3] = uint8((uint32(outputColor[3])*alphaOffset/(1<<16-1) + sourceAlpha) >> 8)
+		}
+	}
 
 	return output
 }
@@ -142,14 +163,14 @@ func flipHorizontal(src *image.NRGBA) *image.NRGBA {
 
 	for x := bounds.Min.X; x < bounds.Max.X; x++ {
 		for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
-			inputOffset := src.PixOffset(x, y)
-			inputColor := src.Pix[inputOffset : inputOffset+4]
+			index := y*src.Stride + x*4
+			inputColor := src.Pix[index : index+4]
 
-			outputOffset := output.PixOffset(bounds.Max.X-x-1, y)
-			output.Pix[outputOffset] = inputColor[0]
-			output.Pix[outputOffset+1] = inputColor[1]
-			output.Pix[outputOffset+2] = inputColor[2]
-			output.Pix[outputOffset+3] = inputColor[3]
+			index = y*output.Stride + (bounds.Max.X-x-1)*4
+			output.Pix[index] = inputColor[0]
+			output.Pix[index+1] = inputColor[1]
+			output.Pix[index+2] = inputColor[2]
+			output.Pix[index+3] = inputColor[3]
 		}
 	}
 
@@ -165,7 +186,7 @@ func fixTransparency(img *image.NRGBA) *image.NRGBA {
 
 	output := clone(img)
 
-	for i, l := 0, output.Stride*output.Bounds().Dy(); i < l; i += 4 {
+	for i, l := 0, len(output.Pix); i < l; i += 4 {
 		if !isEqualSlice(checkColor, output.Pix[i:i+4]) {
 			continue
 		}
@@ -222,12 +243,12 @@ func compositeTransform(dst, src *image.NRGBA, m matrix2x2, outputX, outputY flo
 				continue
 			}
 
-			sourceIndex := src.PixOffset(int(sourceX), int(sourceY))
-			sourceColor := src.Pix[sourceIndex : sourceIndex+4 : sourceIndex+4]
+			index := int(sourceY)*src.Stride + int(sourceX)*4
+			sourceColor := src.Pix[index : index+4]
 			sourceAlpha := uint32(sourceColor[3]) * 0x101
 
-			outputIndex := output.PixOffset(outputX, outputY)
-			outputColor := output.Pix[outputIndex : outputIndex+4 : outputIndex+4]
+			index = outputY*output.Stride + outputX*4
+			outputColor := output.Pix[index : index+4]
 
 			alphaOffset := ((1<<16 - 1) - sourceAlpha) * 0x101
 
@@ -247,14 +268,14 @@ func rotate90(img *image.NRGBA) *image.NRGBA {
 
 	for x := 0; x < bounds.X; x++ {
 		for y := 0; y < bounds.Y; y++ {
-			inputOffset := img.PixOffset(x, y)
-			inputColor := img.Pix[inputOffset : inputOffset+4]
+			index := y*img.Stride + x*4
+			inputColor := img.Pix[index : index+4]
 
-			outputOffset := output.PixOffset(int(y), int(x))
-			output.Pix[outputOffset] = inputColor[0]
-			output.Pix[outputOffset+1] = inputColor[1]
-			output.Pix[outputOffset+2] = inputColor[2]
-			output.Pix[outputOffset+3] = inputColor[3]
+			index = int(x)*img.Stride + int(y)*4 // Intentionally flipped X and Y
+			output.Pix[index] = inputColor[0]
+			output.Pix[index+1] = inputColor[1]
+			output.Pix[index+2] = inputColor[2]
+			output.Pix[index+3] = inputColor[3]
 		}
 	}
 
@@ -267,14 +288,14 @@ func rotate270(img *image.NRGBA) *image.NRGBA {
 
 	for x := 0; x < bounds.X; x++ {
 		for y := 0; y < bounds.Y; y++ {
-			inputOffset := img.PixOffset(x, y)
-			inputColor := img.Pix[inputOffset : inputOffset+4]
+			index := y*img.Stride + x*4
+			inputColor := img.Pix[index : index+4]
 
-			outputOffset := output.PixOffset(int(y), bounds.X-int(x)-1)
-			output.Pix[outputOffset] = inputColor[0]
-			output.Pix[outputOffset+1] = inputColor[1]
-			output.Pix[outputOffset+2] = inputColor[2]
-			output.Pix[outputOffset+3] = inputColor[3]
+			index = (bounds.X-int(x)-1)*img.Stride + int(y)*4 // Intentionally flipped X and Y
+			output.Pix[index] = inputColor[0]
+			output.Pix[index+1] = inputColor[1]
+			output.Pix[index+2] = inputColor[2]
+			output.Pix[index+3] = inputColor[3]
 		}
 	}
 

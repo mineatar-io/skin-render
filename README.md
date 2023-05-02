@@ -1,5 +1,5 @@
 # skin-render
-A library for rendering Minecraft skins into 2D and 3D isometric images. Inspired by existing services like [Crafatar](https://crafatar.com/), but with an effort to make renders faster and more efficient.
+A *extremely* high performant library for rendering Minecraft skins into 2D and 3D isometric images. Inspired by existing services like [Crafatar](https://crafatar.com/), but with an effort to make renders faster and more efficient.
 
 ## Documentation
 

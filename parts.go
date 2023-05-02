@@ -120,9 +120,9 @@ var (
 	// RightLegOverlayBack is the back side of the right leg overlay
 	RightLegOverlayBack image.Rectangle = image.Rect(12, 36, 16, 48)
 	// TorsoOverlayTop is the top side of the torso overlay
-	TorsoOverlayTop image.Rectangle = image.Rect(20, 48, 28, 36)
+	TorsoOverlayTop image.Rectangle = image.Rect(20, 48, 28, 52)
 	// TorsoOverlayBottom is the bottom side of the torso overlay
-	TorsoOverlayBottom image.Rectangle = image.Rect(28, 48, 36, 36)
+	TorsoOverlayBottom image.Rectangle = image.Rect(28, 48, 36, 52)
 	// TorsoOverlayRight is the right side of the torso overlay
 	TorsoOverlayRight image.Rectangle = image.Rect(16, 36, 20, 48)
 	// TorsoOverlayFront is the front side of the torso overlay
@@ -132,9 +132,9 @@ var (
 	// TorsoOverlayBack is the back side of the torso overlay
 	TorsoOverlayBack image.Rectangle = image.Rect(32, 36, 40, 48)
 	// RightArmOverlayTopRegular is the top side of the right arm overlay for regular skin models
-	RightArmOverlayTopRegular image.Rectangle = image.Rect(44, 48, 48, 36)
+	RightArmOverlayTopRegular image.Rectangle = image.Rect(44, 48, 48, 36) // FIXME
 	// RightArmOverlayTopSlim is the top side of the right arm overlay for slim skin models
-	RightArmOverlayTopSlim image.Rectangle = image.Rect(44, 48, 47, 36)
+	RightArmOverlayTopSlim image.Rectangle = image.Rect(44, 48, 47, 36) // FIXME
 	// RightArmOverlayBottomRegular is the bottom side of the right arm overlay for regular skin models
 	RightArmOverlayBottomRegular image.Rectangle = image.Rect(48, 48, 52, 36)
 	// RightArmOverlayBottomSlim is the bottom side of the right arm overlay for slim skin models

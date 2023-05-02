@@ -21,19 +21,33 @@ func TestHeadSteve(t *testing.T) {
 			Slim:    false,
 		})
 
-		f, err := os.OpenFile(fmt.Sprintf("head_steve_test_%d.png", scale), os.O_CREATE|os.O_RDWR, 0777)
+		if writeRenders {
+			f, err := os.OpenFile(fmt.Sprintf("head_steve_test_%d.png", scale), os.O_CREATE|os.O_RDWR, 0777)
 
-		if err != nil {
-			t.Fatal(err)
-		}
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if err = png.Encode(f, output); err != nil {
-			t.Fatal(err)
-		}
+			if err = png.Encode(f, output); err != nil {
+				t.Fatal(err)
+			}
 
-		if err = f.Close(); err != nil {
-			t.Fatal(err)
+			if err = f.Close(); err != nil {
+				t.Fatal(err)
+			}
 		}
+	}
+}
+
+func BenchmarkHeadSteve(b *testing.B) {
+	rawSkin := skin.GetDefaultSkin(false)
+
+	for n := 0; n <= b.N; n++ {
+		skin.RenderHead(rawSkin, skin.Options{
+			Scale:   defaultBenchmarkRenderScale,
+			Overlay: true,
+			Slim:    false,
+		})
 	}
 }
 
@@ -49,30 +63,32 @@ func TestHeadAlex(t *testing.T) {
 			Slim:    true,
 		})
 
-		f, err := os.OpenFile(fmt.Sprintf("head_alex_test_%d.png", scale), os.O_CREATE|os.O_RDWR, 0777)
+		if writeRenders {
+			f, err := os.OpenFile(fmt.Sprintf("head_alex_test_%d.png", scale), os.O_CREATE|os.O_RDWR, 0777)
 
-		if err != nil {
-			t.Fatal(err)
-		}
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if err = png.Encode(f, output); err != nil {
-			t.Fatal(err)
-		}
+			if err = png.Encode(f, output); err != nil {
+				t.Fatal(err)
+			}
 
-		if err = f.Close(); err != nil {
-			t.Fatal(err)
+			if err = f.Close(); err != nil {
+				t.Fatal(err)
+			}
 		}
 	}
 }
 
-func BenchmarkHeadSteve(b *testing.B) {
-	rawSkin := skin.GetDefaultSkin(false)
+func BenchmarkHeadAlex(b *testing.B) {
+	rawSkin := skin.GetDefaultSkin(true)
 
-	for n := 0; n < b.N; n++ {
+	for n := 0; n <= b.N; n++ {
 		skin.RenderHead(rawSkin, skin.Options{
-			Scale:   4,
+			Scale:   defaultBenchmarkRenderScale,
 			Overlay: true,
-			Slim:    false,
+			Slim:    true,
 		})
 	}
 }

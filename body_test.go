@@ -21,19 +21,33 @@ func TestFullBodySteve(t *testing.T) {
 			Slim:    false,
 		})
 
-		f, err := os.OpenFile(fmt.Sprintf("fullbody_steve_test_%d.png", scale), os.O_CREATE|os.O_RDWR, 0777)
+		if writeRenders {
+			f, err := os.OpenFile(fmt.Sprintf("fullbody_steve_test_%d.png", scale), os.O_CREATE|os.O_RDWR, 0777)
 
-		if err != nil {
-			t.Fatal(err)
-		}
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if err = png.Encode(f, output); err != nil {
-			t.Fatal(err)
-		}
+			if err = png.Encode(f, output); err != nil {
+				t.Fatal(err)
+			}
 
-		if err = f.Close(); err != nil {
-			t.Fatal(err)
+			if err = f.Close(); err != nil {
+				t.Fatal(err)
+			}
 		}
+	}
+}
+
+func BenchmarkFullBodySteve(b *testing.B) {
+	rawSkin := skin.GetDefaultSkin(false)
+
+	for n := 0; n <= b.N; n++ {
+		skin.RenderBody(rawSkin, skin.Options{
+			Scale:   defaultBenchmarkRenderScale,
+			Overlay: true,
+			Slim:    false,
+		})
 	}
 }
 
@@ -49,18 +63,32 @@ func TestFullBodyAlex(t *testing.T) {
 			Slim:    true,
 		})
 
-		f, err := os.OpenFile(fmt.Sprintf("fullbody_alex_test_%d.png", scale), os.O_CREATE|os.O_RDWR, 0777)
+		if writeRenders {
+			f, err := os.OpenFile(fmt.Sprintf("fullbody_alex_test_%d.png", scale), os.O_CREATE|os.O_RDWR, 0777)
 
-		if err != nil {
-			t.Fatal(err)
-		}
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		if err = png.Encode(f, output); err != nil {
-			t.Fatal(err)
-		}
+			if err = png.Encode(f, output); err != nil {
+				t.Fatal(err)
+			}
 
-		if err = f.Close(); err != nil {
-			t.Fatal(err)
+			if err = f.Close(); err != nil {
+				t.Fatal(err)
+			}
 		}
+	}
+}
+
+func BenchmarkFullBodyAlex(b *testing.B) {
+	rawSkin := skin.GetDefaultSkin(true)
+
+	for n := 0; n <= b.N; n++ {
+		skin.RenderBody(rawSkin, skin.Options{
+			Scale:   defaultBenchmarkRenderScale,
+			Overlay: true,
+			Slim:    true,
+		})
 	}
 }
