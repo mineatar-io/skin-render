@@ -6,9 +6,13 @@ import (
 )
 
 var (
-	sideMatrix  matrix2x2 = rotationMatrix(degToRad(30)).Multiply(skewXMatrix(degToRad(30))).Multiply(scaleYMatrix(0.86603))
-	frontMatrix matrix2x2 = rotationMatrix(degToRad(-30)).Multiply(skewXMatrix(degToRad(-30))).Multiply(scaleYMatrix(0.86603))
-	plantMatrix matrix2x2 = rotationMatrix(degToRad(30)).Multiply(skewXMatrix(degToRad(-30))).Multiply(scaleYMatrix(0.86603))
+	sideMatrix         matrix2x2 = rotationMatrix(degToRad(30)).Multiply(skewXMatrix(degToRad(30))).Multiply(scaleYMatrix(0.86603))
+	frontMatrix        matrix2x2 = rotationMatrix(degToRad(-30)).Multiply(skewXMatrix(degToRad(-30))).Multiply(scaleYMatrix(0.86603))
+	plantMatrix        matrix2x2 = rotationMatrix(degToRad(30)).Multiply(skewXMatrix(degToRad(-30))).Multiply(scaleYMatrix(0.86603))
+	overlayMatrix      matrix2x2 = scaleMatrix(8.5 / 8.0)
+	sideOverlayMatrix  matrix2x2 = sideMatrix.Multiply(overlayMatrix)
+	frontOverlayMatrix matrix2x2 = frontMatrix.Multiply(overlayMatrix)
+	plantOverlayMatrix matrix2x2 = plantMatrix.Multiply(overlayMatrix)
 )
 
 type matrix2x2 [4]float64
@@ -44,6 +48,13 @@ func scaleYMatrix(a float64) matrix2x2 {
 	}
 }
 
+func scaleMatrix(a float64) matrix2x2 {
+	return matrix2x2{
+		a, 0,
+		0, a,
+	}
+}
+
 func skewXMatrix(a float64) matrix2x2 {
 	return matrix2x2{
 		1, math.Tan(a),
@@ -60,23 +71,6 @@ func rotationMatrix(a float64) matrix2x2 {
 
 func degToRad(a float64) float64 {
 	return a * (math.Pi / 180.0)
-}
-
-type vector2 struct {
-	X, Y float64
-}
-
-type rectangle struct {
-	X0, Y0, X1, Y1 float64
-}
-
-func (a vector2) MultiplyMatrix2(b matrix2x2) vector2 {
-	x, y := translateCoordinatesWithMatrix(a.X, a.Y, b)
-
-	return vector2{
-		X: x,
-		Y: y,
-	}
 }
 
 func transformRect(m matrix2x2, r image.Rectangle) (output image.Rectangle) {
@@ -124,13 +118,6 @@ func transformRect(m matrix2x2, r image.Rectangle) (output image.Rectangle) {
 	}
 
 	return output
-}
-
-func translateRectWithMatrix(a image.Rectangle, b matrix2x2) (float64, float64, float64, float64) {
-	ax, ay := translateCoordinatesWithMatrix(float64(a.Min.X), float64(a.Min.Y), b)
-	bx, by := translateCoordinatesWithMatrix(float64(a.Max.X), float64(a.Max.Y), b)
-
-	return ax, ay, bx, by
 }
 
 func translateCoordinatesWithMatrix(x, y float64, b matrix2x2) (float64, float64) {

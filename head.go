@@ -11,26 +11,20 @@ func RenderHead(skin *image.NRGBA, opts Options) *image.NRGBA {
 
 	var output *image.NRGBA = image.NewNRGBA(image.Rect(0, 0, 13*opts.Scale+int(math.Ceil(scaleDouble*0.86603)), 16*opts.Scale))
 
-	var (
-		frontHead *image.NRGBA = removeTransparency(extract(skin, HeadFront))
-		topHead   *image.NRGBA = removeTransparency(extract(skin, HeadTop))
-		rightHead *image.NRGBA = removeTransparency(extract(skin, HeadRight))
-	)
-
 	// Front Head
-	output = compositeTransform(output, scale(frontHead, opts.Scale), frontMatrix, 8*scaleDouble, 12*scaleDouble-1)
+	output = compositeTransform(output, scale(removeTransparency(extract(skin, HeadFront)), opts.Scale), frontMatrix, 8*scaleDouble, 12*scaleDouble)
 
 	// Top Head
-	output = compositeTransform(output, scale(topHead, opts.Scale), plantMatrix, 4*scaleDouble, -4*scaleDouble)
+	output = compositeTransform(output, scale(removeTransparency(extract(skin, HeadTop)), opts.Scale), plantMatrix, 4*scaleDouble, -4*scaleDouble)
 
 	// Right Head
-	output = compositeTransform(output, scale(rightHead, opts.Scale), sideMatrix, 0, 4*scaleDouble)
+	output = compositeTransform(output, scale(removeTransparency(extract(skin, HeadRight)), opts.Scale), sideMatrix, 0, 4*scaleDouble)
 
 	if opts.Overlay {
 		overlaySkin := fixTransparency(skin)
 
 		// Front Head Overlay
-		output = compositeTransform(output, scale(extract(overlaySkin, HeadOverlayFront), opts.Scale), frontMatrix, 8*scaleDouble, 12*scaleDouble-1)
+		output = compositeTransform(output, scale(extract(overlaySkin, HeadOverlayFront), opts.Scale), frontMatrix, 8*scaleDouble, 12*scaleDouble)
 
 		// Top Head Overlay
 		output = compositeTransform(output, scale(extract(overlaySkin, HeadOverlayTop), opts.Scale), plantMatrix, 4*scaleDouble, -4*scaleDouble)
