@@ -23,16 +23,16 @@ func RenderRightBody(skin *image.NRGBA, opts Options) *image.NRGBA {
 		}
 	}
 
-	var output *image.NRGBA = image.NewNRGBA(image.Rect(0, 0, 8, 32))
+	var output *image.NRGBA = image.NewNRGBA(image.Rect(0, 0, 16, 32))
 
 	// Right Head
-	output = composite(output, rightHead, 0, 0)
+	output = composite(output, rightHead, 4, 0)
 
 	// Right Arm
-	output = composite(output, rightRightArm, 2, 8)
+	output = composite(output, rightRightArm, 6, 8)
 
 	// Right Leg
-	output = composite(output, rightRightLeg, 2, 20)
+	output = composite(output, rightRightLeg, 6, 20)
 
 	return scale(output, opts.Scale)
 }
