@@ -6,13 +6,9 @@ import (
 )
 
 var (
-	sideMatrix         matrix2x2 = rotationMatrix(degToRad(30)).Multiply(skewXMatrix(degToRad(30))).Multiply(scaleYMatrix(0.86603))
-	frontMatrix        matrix2x2 = rotationMatrix(degToRad(-30)).Multiply(skewXMatrix(degToRad(-30))).Multiply(scaleYMatrix(0.86603))
-	plantMatrix        matrix2x2 = rotationMatrix(degToRad(30)).Multiply(skewXMatrix(degToRad(-30))).Multiply(scaleYMatrix(0.86603))
-	overlayMatrix      matrix2x2 = scaleMatrix(8.5 / 8.0)
-	sideOverlayMatrix  matrix2x2 = sideMatrix.Multiply(overlayMatrix)
-	frontOverlayMatrix matrix2x2 = frontMatrix.Multiply(overlayMatrix)
-	plantOverlayMatrix matrix2x2 = plantMatrix.Multiply(overlayMatrix)
+	sideMatrix  matrix2x2 = rotationMatrix(degToRad(30)).Multiply(skewXMatrix(degToRad(30))).Multiply(scaleYMatrix(0.86603))
+	frontMatrix matrix2x2 = rotationMatrix(degToRad(-30)).Multiply(skewXMatrix(degToRad(-30))).Multiply(scaleYMatrix(0.86603))
+	plantMatrix matrix2x2 = rotationMatrix(degToRad(30)).Multiply(skewXMatrix(degToRad(-30))).Multiply(scaleYMatrix(0.86603))
 )
 
 type matrix2x2 [4]float64
@@ -44,13 +40,6 @@ func (a matrix2x2) Inverse() matrix2x2 {
 func scaleYMatrix(a float64) matrix2x2 {
 	return matrix2x2{
 		1, 0,
-		0, a,
-	}
-}
-
-func scaleMatrix(a float64) matrix2x2 {
-	return matrix2x2{
-		a, 0,
 		0, a,
 	}
 }
