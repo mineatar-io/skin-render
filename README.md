@@ -1,5 +1,5 @@
 # skin-render
-A *extremely* high performant library for rendering Minecraft skins into 2D and 3D isometric images. Inspired by existing services like [Crafatar](https://crafatar.com/), but with an effort to make renders faster and more efficient.
+A fast and efficient library for rendering Minecraft skins into 2D and 3D isometric images. Inspired by existing services like [Crafatar](https://crafatar.com/) but with performance in mind. This library is used in production for [mineatar.io](https://mineatar.io).
 
 ## Documentation
 
@@ -7,33 +7,15 @@ https://pkg.go.dev/github.com/mineatar-io/skin-render
 
 ## Examples
 
-### `RenderFace()`
-
-![face_steve_test](https://api.mineatar.io/face/c06f89064c8a49119c29ea1dbd1aab82?scale=8)
-
-### `RenderHead()`
-
-![head_steve_test](https://api.mineatar.io/head/c06f89064c8a49119c29ea1dbd1aab82?scale=8)
-
-### `RenderBody()`
-
-![fullbody_steve_test](https://api.mineatar.io/body/full/c06f89064c8a49119c29ea1dbd1aab82?scale=8)
-
-### `RenderFrontBody()`
-
-![frontbody_steve_test](https://api.mineatar.io/body/front/c06f89064c8a49119c29ea1dbd1aab82?scale=8)
-
-### `RenderBackBody()`
-
-![backbody_steve_test](https://api.mineatar.io/body/back/c06f89064c8a49119c29ea1dbd1aab82?scale=8)
-
-### `RenderLeftBody()`
-
-![leftbody_steve_test](https://api.mineatar.io/body/left/c06f89064c8a49119c29ea1dbd1aab82?scale=8)
-
-### `RenderRightBody()`
-
-![rightbody_steve_test](https://api.mineatar.io/body/right/c06f89064c8a49119c29ea1dbd1aab82?scale=8)
+Method              | Result
+------------------- | ------
+`RenderFace()`      | ![face_steve_test](https://api.mineatar.io/face/c06f89064c8a49119c29ea1dbd1aab82?scale=8)
+`RenderHead()`      | ![head_steve_test](https://api.mineatar.io/head/c06f89064c8a49119c29ea1dbd1aab82?scale=6)
+`RenderBody()`      | ![fullbody_steve_test](https://api.mineatar.io/body/full/c06f89064c8a49119c29ea1dbd1aab82?scale=6)
+`RenderFrontBody()` | ![frontbody_steve_test](https://api.mineatar.io/body/front/c06f89064c8a49119c29ea1dbd1aab82?scale=6)
+`RenderBackBody()`  | ![backbody_steve_test](https://api.mineatar.io/body/back/c06f89064c8a49119c29ea1dbd1aab82?scale=6)
+`RenderLeftBody()`  | ![leftbody_steve_test](https://api.mineatar.io/body/left/c06f89064c8a49119c29ea1dbd1aab82?scale=6)
+`RenderRightBody()` | ![rightbody_steve_test](https://api.mineatar.io/body/right/c06f89064c8a49119c29ea1dbd1aab82?scale=6)
 
 ## Credit
 
