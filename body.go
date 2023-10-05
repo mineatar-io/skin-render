@@ -15,7 +15,7 @@ func RenderBody(skin *image.NRGBA, opts Options) *image.NRGBA {
 
 	var (
 		frontHead     *image.NRGBA = removeTransparency(extract(skin, HeadFront))
-		topHead       *image.NRGBA = removeTransparency(extract(skin, HeadTop))
+		topHead       *image.NRGBA = rotate90(removeTransparency(extract(skin, HeadTop)))
 		rightHead     *image.NRGBA = removeTransparency(extract(skin, HeadRight))
 		frontTorso    *image.NRGBA = removeTransparency(extract(skin, TorsoFront))
 		frontLeftArm  *image.NRGBA = nil
@@ -41,7 +41,7 @@ func RenderBody(skin *image.NRGBA, opts Options) *image.NRGBA {
 	if opts.Overlay {
 		overlaySkin := fixTransparency(skin)
 
-		topHead = composite(topHead, extract(overlaySkin, HeadOverlayTop), 0, 0)
+		topHead = composite(topHead, rotate90(extract(overlaySkin, HeadOverlayTop)), 0, 0)
 		frontHead = composite(frontHead, extract(overlaySkin, HeadOverlayFront), 0, 0)
 		rightHead = composite(rightHead, extract(overlaySkin, HeadOverlayRight), 0, 0)
 
