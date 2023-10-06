@@ -6,14 +6,17 @@ import (
 )
 
 // RenderBody renders a 3-dimensional image of the full body of a Minecraft player's skin.
-func RenderBody(skin *image.NRGBA, opts Options) *image.NRGBA {
-	scaleDouble := float64(opts.Scale)
-	slimOffset := getSlimOffset(opts.Slim)
-	isOldSkin := IsOldSkin(skin)
-
-	var output *image.NRGBA = image.NewNRGBA(image.Rect(0, 0, 17*opts.Scale+int(math.Ceil(scaleDouble*0.32)), 39*opts.Scale))
+func RenderBody(img *image.NRGBA, opts Options) *image.NRGBA {
+	if err := validateSkin(img); err != nil {
+		panic(err)
+	}
 
 	var (
+		skin          *image.NRGBA = convertToNRGBA(img)
+		scaleDouble   float64      = float64(opts.Scale)
+		slimOffset    int          = getSlimOffset(opts.Slim)
+		isOldSkin     bool         = IsOldSkin(skin)
+		output        *image.NRGBA = image.NewNRGBA(image.Rect(0, 0, 17*opts.Scale+int(math.Ceil(scaleDouble*0.32)), 39*opts.Scale))
 		frontHead     *image.NRGBA = removeTransparency(extract(skin, HeadFront))
 		topHead       *image.NRGBA = rotate90(flipHorizontal(removeTransparency(extract(skin, HeadTop))))
 		rightHead     *image.NRGBA = removeTransparency(extract(skin, HeadRight))

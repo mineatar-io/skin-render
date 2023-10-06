@@ -69,6 +69,25 @@ func GetDefaultSkin(slim bool) *image.NRGBA {
 	return steveSkin
 }
 
+func validateSkin(img image.Image) error {
+	if img.Bounds().Dx() == 64 && (img.Bounds().Dy() == 32 || img.Bounds().Dy() == 64) {
+		return nil
+	}
+
+	return fmt.Errorf("invalid skin dimensions (received=%dx%d, expected=64x32 or 64x64)", img.Bounds().Dx(), img.Bounds().Dy())
+}
+
+func convertToNRGBA(img image.Image) *image.NRGBA {
+	if res, ok := img.(*image.NRGBA); ok {
+		return res
+	}
+
+	res := image.NewNRGBA(img.Bounds())
+	draw.Draw(res, img.Bounds(), img, image.Pt(0, 0), draw.Src)
+
+	return res
+}
+
 func extract(img *image.NRGBA, r image.Rectangle) *image.NRGBA {
 	output := image.NewNRGBA(image.Rect(0, 0, r.Dx(), r.Dy()))
 

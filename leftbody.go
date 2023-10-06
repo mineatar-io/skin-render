@@ -5,10 +5,15 @@ import (
 )
 
 // RenderLeftBody renders a 2-dimensional image of the left side of a Minecraft player's skin.
-func RenderLeftBody(skin *image.NRGBA, opts Options) *image.NRGBA {
-	isOldSkin := IsOldSkin(skin)
+func RenderLeftBody(img *image.NRGBA, opts Options) *image.NRGBA {
+	if err := validateSkin(img); err != nil {
+		panic(err)
+	}
 
 	var (
+		skin        *image.NRGBA = convertToNRGBA(img)
+		isOldSkin   bool         = IsOldSkin(skin)
+		output      *image.NRGBA = image.NewNRGBA(image.Rect(0, 0, 16, 32))
 		leftHead    *image.NRGBA = removeTransparency(extract(skin, HeadLeft))
 		leftLeftArm *image.NRGBA = nil
 		leftLeftLeg *image.NRGBA = nil
@@ -32,8 +37,6 @@ func RenderLeftBody(skin *image.NRGBA, opts Options) *image.NRGBA {
 			leftLeftLeg = composite(leftLeftLeg, extract(overlaySkin, LeftLegOverlayLeft), 0, 0)
 		}
 	}
-
-	var output *image.NRGBA = image.NewNRGBA(image.Rect(0, 0, 16, 32))
 
 	// Left Head
 	output = composite(output, leftHead, 4, 0)

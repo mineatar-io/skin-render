@@ -21,6 +21,14 @@ func TestFrontBodySteve(t *testing.T) {
 			Slim:    false,
 		})
 
+		if output.Bounds().Dx() < 1 {
+			t.Fatalf("result image width is %d pixels\n", output.Bounds().Dx())
+		}
+
+		if output.Bounds().Dy() < 1 {
+			t.Fatalf("result image height is %d pixels\n", output.Bounds().Dy())
+		}
+
 		if writeRenders {
 			f, err := os.OpenFile(fmt.Sprintf("frontbody_steve_test_%d.png", scale), os.O_CREATE|os.O_RDWR, 0777)
 
@@ -62,6 +70,14 @@ func TestFrontBodyAlex(t *testing.T) {
 			Overlay: true,
 			Slim:    true,
 		})
+
+		if output.Bounds().Dx() < 1 {
+			t.Fatalf("result image width is %d pixels\n", output.Bounds().Dx())
+		}
+
+		if output.Bounds().Dy() < 1 {
+			t.Fatalf("result image height is %d pixels\n", output.Bounds().Dy())
+		}
 
 		if writeRenders {
 			f, err := os.OpenFile(fmt.Sprintf("frontbody_alex_test_%d.png", scale), os.O_CREATE|os.O_RDWR, 0777)
