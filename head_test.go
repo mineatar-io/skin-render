@@ -2,12 +2,49 @@ package skin_test
 
 import (
 	"fmt"
+	"image"
 	"image/png"
 	"os"
 	"testing"
 
 	"github.com/mineatar-io/skin-render"
 )
+
+func TestHeadGradient(t *testing.T) {
+	f, err := os.Open("test.png")
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	img, err := png.Decode(f)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err = f.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	res := skin.RenderBody(img.(*image.NRGBA), skin.Options{
+		Scale:   16,
+		Overlay: false,
+		Slim:    false,
+	})
+
+	f, err = os.OpenFile("output.png", os.O_CREATE|os.O_RDWR, 0777)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer f.Close()
+
+	if err = png.Encode(f, res); err != nil {
+		t.Fatal(err)
+	}
+}
 
 func TestHeadSteve(t *testing.T) {
 	rawSkin := skin.GetDefaultSkin(false)

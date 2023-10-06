@@ -177,6 +177,26 @@ func flipHorizontal(src *image.NRGBA) *image.NRGBA {
 	return output
 }
 
+func flipVertically(src *image.NRGBA) *image.NRGBA {
+	bounds := src.Bounds()
+	output := image.NewNRGBA(bounds)
+
+	for x := bounds.Min.X; x < bounds.Max.X; x++ {
+		for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+			index := y*src.Stride + x*4
+			inputColor := src.Pix[index : index+4]
+
+			index = (bounds.Max.Y-y-1)*output.Stride + x*4
+			output.Pix[index] = inputColor[0]
+			output.Pix[index+1] = inputColor[1]
+			output.Pix[index+2] = inputColor[2]
+			output.Pix[index+3] = inputColor[3]
+		}
+	}
+
+	return output
+}
+
 func fixTransparency(img *image.NRGBA) *image.NRGBA {
 	checkColor := img.Pix[0:4]
 
