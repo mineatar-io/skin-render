@@ -23,19 +23,19 @@ func RenderHead(img *image.NRGBA, opts Options) *image.NRGBA {
 	if opts.Overlay {
 		overlaySkin := fixTransparency(skin)
 
-		frontHead = composite(frontHead, extract(overlaySkin, HeadOverlayFront), 0, 0)
-		topHead = composite(topHead, rotate90(flipHorizontal(extract(overlaySkin, HeadOverlayTop))), 0, 0)
-		rightHead = composite(rightHead, extract(overlaySkin, HeadOverlayRight), 0, 0)
+		composite(frontHead, extract(overlaySkin, HeadOverlayFront), 0, 0)
+		composite(topHead, rotate90(flipHorizontal(extract(overlaySkin, HeadOverlayTop))), 0, 0)
+		composite(rightHead, extract(overlaySkin, HeadOverlayRight), 0, 0)
 	}
 
 	// Front Head
-	output = compositeTransform(output, scale(frontHead, opts.Scale), frontMatrix, 8*scaleDouble, 12*scaleDouble)
+	compositeTransform(output, scale(frontHead, opts.Scale), frontMatrix, 8*scaleDouble, 12*scaleDouble)
 
 	// Top Head
-	output = compositeTransform(output, scale(topHead, opts.Scale), plantMatrix, 4*scaleDouble, -4*scaleDouble)
+	compositeTransform(output, scale(topHead, opts.Scale), plantMatrix, 4*scaleDouble, -4*scaleDouble)
 
 	// Right Head
-	output = compositeTransform(output, scale(rightHead, opts.Scale), sideMatrix, 0, 4*scaleDouble)
+	compositeTransform(output, scale(rightHead, opts.Scale), sideMatrix, 0, 4*scaleDouble)
 
 	return output
 }

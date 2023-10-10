@@ -16,7 +16,7 @@ func RenderFace(img *image.NRGBA, opts Options) *image.NRGBA {
 	if opts.Overlay {
 		overlaySkin := fixTransparency(skin)
 
-		output = composite(output, extract(overlaySkin, HeadOverlayFront), 0, 0)
+		composite(output, extract(overlaySkin, HeadOverlayFront), 0, 0)
 	}
 
 	return scale(output, opts.Scale)

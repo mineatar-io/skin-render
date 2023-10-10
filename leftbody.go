@@ -30,22 +30,22 @@ func RenderLeftBody(img *image.NRGBA, opts Options) *image.NRGBA {
 	if opts.Overlay {
 		overlaySkin := fixTransparency(skin)
 
-		leftHead = composite(leftHead, extract(overlaySkin, HeadOverlayLeft), 0, 0)
+		composite(leftHead, extract(overlaySkin, HeadOverlayLeft), 0, 0)
 
 		if !isOldSkin {
-			leftLeftArm = composite(leftLeftArm, extract(overlaySkin, GetLeftArmOverlayLeft(opts.Slim)), 0, 0)
-			leftLeftLeg = composite(leftLeftLeg, extract(overlaySkin, LeftLegOverlayLeft), 0, 0)
+			composite(leftLeftArm, extract(overlaySkin, GetLeftArmOverlayLeft(opts.Slim)), 0, 0)
+			composite(leftLeftLeg, extract(overlaySkin, LeftLegOverlayLeft), 0, 0)
 		}
 	}
 
 	// Left Head
-	output = composite(output, leftHead, 4, 0)
+	composite(output, leftHead, 4, 0)
 
 	// Left Arm
-	output = composite(output, leftLeftArm, 6, 8)
+	composite(output, leftLeftArm, 6, 8)
 
 	// Left Leg
-	output = composite(output, leftLeftLeg, 6, 20)
+	composite(output, leftLeftLeg, 6, 20)
 
 	return scale(output, opts.Scale)
 }

@@ -34,34 +34,34 @@ func RenderFrontBody(img *image.NRGBA, opts Options) *image.NRGBA {
 	if opts.Overlay {
 		overlaySkin := fixTransparency(skin)
 
-		frontHead = composite(frontHead, extract(overlaySkin, HeadOverlayFront), 0, 0)
+		composite(frontHead, extract(overlaySkin, HeadOverlayFront), 0, 0)
 
 		if !isOldSkin {
-			frontTorso = composite(frontTorso, extract(overlaySkin, TorsoOverlayFront), 0, 0)
-			leftArm = composite(leftArm, extract(overlaySkin, GetLeftArmOverlayFront(opts.Slim)), 0, 0)
-			rightArm = composite(rightArm, extract(overlaySkin, GetRightArmOverlayFront(opts.Slim)), 0, 0)
-			leftLeg = composite(leftLeg, extract(overlaySkin, LeftLegOverlayFront), 0, 0)
-			rightLeg = composite(rightLeg, extract(overlaySkin, RightLegOverlayFront), 0, 0)
+			composite(frontTorso, extract(overlaySkin, TorsoOverlayFront), 0, 0)
+			composite(leftArm, extract(overlaySkin, GetLeftArmOverlayFront(opts.Slim)), 0, 0)
+			composite(rightArm, extract(overlaySkin, GetRightArmOverlayFront(opts.Slim)), 0, 0)
+			composite(leftLeg, extract(overlaySkin, LeftLegOverlayFront), 0, 0)
+			composite(rightLeg, extract(overlaySkin, RightLegOverlayFront), 0, 0)
 		}
 	}
 
 	// Face
-	output = composite(output, frontHead, 4, 0)
+	composite(output, frontHead, 4, 0)
 
 	// Torso
-	output = composite(output, frontTorso, 4, 8)
+	composite(output, frontTorso, 4, 8)
 
 	// Left Arm
-	output = composite(output, leftArm, 12, 8)
+	composite(output, leftArm, 12, 8)
 
 	// Right Arm
-	output = composite(output, rightArm, slimOffset, 8)
+	composite(output, rightArm, slimOffset, 8)
 
 	// Left Leg
-	output = composite(output, leftLeg, 8, 20)
+	composite(output, leftLeg, 8, 20)
 
 	// Right Leg
-	output = composite(output, rightLeg, 4, 20)
+	composite(output, rightLeg, 4, 20)
 
 	return scale(output, opts.Scale)
 }

@@ -145,37 +145,6 @@ func removeTransparency(img *image.NRGBA) *image.NRGBA {
 	return output
 }
 
-func composite(bottom, top *image.NRGBA, dx, dy int) *image.NRGBA {
-	output := clone(bottom)
-
-	outputBounds := output.Bounds()
-	srcBounds := top.Bounds()
-
-	for x := srcBounds.Min.X; x < srcBounds.Max.X; x++ {
-		for y := srcBounds.Min.Y; y < srcBounds.Max.Y; y++ {
-			if dx+x < outputBounds.Min.X || dy+y < outputBounds.Min.Y || dx+x >= outputBounds.Max.X || dy+y >= outputBounds.Max.Y {
-				continue
-			}
-
-			index := y*top.Stride + x*4
-			sourceColor := top.Pix[index : index+4]
-			sourceAlpha := uint32(sourceColor[3]) * 0x101
-
-			index = (dy+y)*output.Stride + (dx+x)*4
-			outputColor := output.Pix[index : index+4]
-
-			alphaOffset := ((1<<16 - 1) - sourceAlpha) * 0x101
-
-			outputColor[0] = uint8((uint32(outputColor[0])*alphaOffset/(1<<16-1) + (uint32(sourceColor[0]) * sourceAlpha / 0xff)) >> 8)
-			outputColor[1] = uint8((uint32(outputColor[1])*alphaOffset/(1<<16-1) + (uint32(sourceColor[1]) * sourceAlpha / 0xff)) >> 8)
-			outputColor[2] = uint8((uint32(outputColor[2])*alphaOffset/(1<<16-1) + (uint32(sourceColor[2]) * sourceAlpha / 0xff)) >> 8)
-			outputColor[3] = uint8((uint32(outputColor[3])*alphaOffset/(1<<16-1) + sourceAlpha) >> 8)
-		}
-	}
-
-	return output
-}
-
 func flipHorizontal(src *image.NRGBA) *image.NRGBA {
 	bounds := src.Bounds()
 	output := image.NewNRGBA(bounds)
@@ -233,16 +202,36 @@ func getSlimOffset(slim bool) int {
 	return 0
 }
 
+func composite(dst, src *image.NRGBA, dx, dy int) {
+	outputBounds := dst.Bounds()
+	srcBounds := src.Bounds()
+
+	for x := srcBounds.Min.X; x < srcBounds.Max.X; x++ {
+		for y := srcBounds.Min.Y; y < srcBounds.Max.Y; y++ {
+			if dx+x < outputBounds.Min.X || dy+y < outputBounds.Min.Y || dx+x >= outputBounds.Max.X || dy+y >= outputBounds.Max.Y {
+				continue
+			}
+
+			index := y*src.Stride + x*4
+			sourceColor := src.Pix[index : index+4]
+
+			index = (dy+y)*dst.Stride + (dx+x)*4
+			outputColor := dst.Pix[index : index+4]
+
+			compositeColors(outputColor, sourceColor)
+		}
+	}
+}
+
 // This function is a whole mess of code that I do not want to touch, but it
 // seems to work very well. Most of this code was influenced by code in the
 // `go/x/image` package, but with a lot less redundancy. The color mixing
 // code was taken from the built-in Go method draw.Draw() from the
 // `image/draw` package.
-func compositeTransform(dst, src *image.NRGBA, m matrix2x2, outputX, outputY float64) *image.NRGBA {
+func compositeTransform(dst, src *image.NRGBA, m matrix2x2, outputX, outputY float64) {
 	sourceBounds := src.Bounds()
 
-	output := clone(dst)
-	outputBounds := output.Bounds()
+	dstBounds := dst.Bounds()
 
 	im := m.Inverse()
 	dr := transformRect(m, src.Bounds())
@@ -252,7 +241,7 @@ func compositeTransform(dst, src *image.NRGBA, m matrix2x2, outputX, outputY flo
 		for boundY := dr.Min.Y; boundY < dr.Max.Y; boundY++ {
 			outputX, outputY := boundX+int(dox), boundY+int(doy)
 
-			if outputX < outputBounds.Min.X || outputY < outputBounds.Min.Y || outputX >= outputBounds.Max.X || outputY >= outputBounds.Max.Y {
+			if outputX < dstBounds.Min.X || outputY < dstBounds.Min.Y || outputX >= dstBounds.Max.X || outputY >= dstBounds.Max.Y {
 				continue
 			}
 
@@ -264,21 +253,24 @@ func compositeTransform(dst, src *image.NRGBA, m matrix2x2, outputX, outputY flo
 
 			index := int(sourceY)*src.Stride + int(sourceX)*4
 			sourceColor := src.Pix[index : index+4]
-			sourceAlpha := uint32(sourceColor[3]) * 0x101
 
-			index = outputY*output.Stride + outputX*4
-			outputColor := output.Pix[index : index+4]
+			index = outputY*dst.Stride + outputX*4
+			outputColor := dst.Pix[index : index+4]
 
-			alphaOffset := ((1<<16 - 1) - sourceAlpha) * 0x101
-
-			outputColor[0] = uint8((uint32(outputColor[0])*alphaOffset/(1<<16-1) + (uint32(sourceColor[0]) * sourceAlpha / 0xff)) >> 8)
-			outputColor[1] = uint8((uint32(outputColor[1])*alphaOffset/(1<<16-1) + (uint32(sourceColor[1]) * sourceAlpha / 0xff)) >> 8)
-			outputColor[2] = uint8((uint32(outputColor[2])*alphaOffset/(1<<16-1) + (uint32(sourceColor[2]) * sourceAlpha / 0xff)) >> 8)
-			outputColor[3] = uint8((uint32(outputColor[3])*alphaOffset/(1<<16-1) + sourceAlpha) >> 8)
+			compositeColors(outputColor, sourceColor)
 		}
 	}
+}
 
-	return output
+func compositeColors(outputColor, sourceColor []uint8) {
+	sourceAlpha := uint32(sourceColor[3]) * 0x101
+
+	alphaOffset := ((1<<16 - 1) - sourceAlpha) * 0x101
+
+	outputColor[0] = uint8((uint32(outputColor[0])*alphaOffset/(1<<16-1) + (uint32(sourceColor[0]) * sourceAlpha / 0xff)) >> 8)
+	outputColor[1] = uint8((uint32(outputColor[1])*alphaOffset/(1<<16-1) + (uint32(sourceColor[1]) * sourceAlpha / 0xff)) >> 8)
+	outputColor[2] = uint8((uint32(outputColor[2])*alphaOffset/(1<<16-1) + (uint32(sourceColor[2]) * sourceAlpha / 0xff)) >> 8)
+	outputColor[3] = uint8((uint32(outputColor[3])*alphaOffset/(1<<16-1) + sourceAlpha) >> 8)
 }
 
 func rotate90(img *image.NRGBA) *image.NRGBA {
