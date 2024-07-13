@@ -37,6 +37,7 @@ func TestFaceSteve(t *testing.T) {
 			Scale:   scale,
 			Overlay: true,
 			Slim:    false,
+			Square:  false,
 		})
 
 		if output.Bounds().Dx() < 1 {
@@ -73,6 +74,7 @@ func BenchmarkFaceSteve(b *testing.B) {
 			Scale:   defaultBenchmarkRenderScale,
 			Overlay: true,
 			Slim:    false,
+			Square:  false,
 		})
 	}
 }
@@ -87,6 +89,7 @@ func TestFaceAlex(t *testing.T) {
 			Scale:   scale,
 			Overlay: true,
 			Slim:    true,
+			Square:  false,
 		})
 
 		if output.Bounds().Dx() < 1 {
@@ -123,6 +126,7 @@ func BenchmarkFaceAlex(b *testing.B) {
 			Scale:   defaultBenchmarkRenderScale,
 			Overlay: true,
 			Slim:    true,
+			Square:  false,
 		})
 	}
 }

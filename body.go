@@ -97,5 +97,9 @@ func RenderBody(img *image.NRGBA, opts Options) *image.NRGBA {
 	// Right Side of Head
 	compositeTransform(output, scale(rightHead, opts.Scale), sideMatrix, 2*scaleDouble, 3*scaleDouble)
 
+	if opts.Square {
+		return squareAndCenter(output)
+	}
+
 	return output
 }

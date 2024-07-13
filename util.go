@@ -313,6 +313,34 @@ func rotate270(img *image.NRGBA) *image.NRGBA {
 	return output
 }
 
+func squareAndCenter(img *image.NRGBA) *image.NRGBA {
+	var (
+		size    int = max(img.Rect.Size().X, img.Rect.Size().Y)
+		offsetX int = int((float64(size) - float64(img.Rect.Size().X)) / 2)
+		offsetY int = int((float64(size) - float64(img.Rect.Size().Y)) / 2)
+
+		output *image.NRGBA = image.NewNRGBA(image.Rect(0, 0, size, size))
+	)
+
+	composite(output, img, offsetX, offsetY)
+
+	return output
+}
+
+func max[T int | int8 | int16 | int32 | int64 | uint | uint8 | uint16 | uint32 | uint64](values ...T) T {
+	result := values[0]
+
+	for _, v := range values {
+		if result > v {
+			continue
+		}
+
+		result = v
+	}
+
+	return result
+}
+
 // Credit: https://github.com/LapisBlue/Lapitar/blob/55ede80ce4ebb5ecc2b968164afb40f61b4cc509/mc/uuid.go#L23
 func isEven(c uint8) bool {
 	switch {

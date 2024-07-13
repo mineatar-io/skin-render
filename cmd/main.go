@@ -22,6 +22,7 @@ type Options struct {
 	Scale     int    `short:"s" long:"scale" description:"The scale of the rendered output image" default:"16"`
 	NoOverlay bool   `short:"O" long:"no-overlay" description:"Disables the overlay layer of the resulting image"`
 	Slim      bool   `short:"S" long:"slim" description:"Enable this option if the input skin image is slim"`
+	Square    bool   `long:"square" description:"Forces the output image to be square"`
 	Output    string `short:"o" long:"output" description:"The file to write the output image to" default:"output.png"`
 	Verbose   bool   `short:"V" long:"verbose" description:"Prints extra debug information"`
 }
@@ -110,11 +111,12 @@ func main() {
 	}
 
 	var (
-		result  *image.NRGBA
+		result  *image.NRGBA = nil
 		options skin.Options = skin.Options{
 			Scale:   opts.Scale,
 			Overlay: !opts.NoOverlay,
 			Slim:    opts.Slim,
+			Square:  opts.Square,
 		}
 	)
 

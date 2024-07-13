@@ -63,5 +63,9 @@ func RenderBackBody(img image.Image, opts Options) *image.NRGBA {
 	// Right Leg
 	composite(output, backRightLeg, 8, 20)
 
+	if opts.Square {
+		output = squareAndCenter(output)
+	}
+
 	return scale(output, opts.Scale)
 }

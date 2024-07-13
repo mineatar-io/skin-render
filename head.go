@@ -37,5 +37,9 @@ func RenderHead(img *image.NRGBA, opts Options) *image.NRGBA {
 	// Right Head
 	compositeTransform(output, scale(rightHead, opts.Scale), sideMatrix, 0, 4*scaleDouble)
 
+	if opts.Square {
+		return squareAndCenter(output)
+	}
+
 	return output
 }

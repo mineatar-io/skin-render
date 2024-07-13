@@ -47,5 +47,9 @@ func RenderLeftBody(img *image.NRGBA, opts Options) *image.NRGBA {
 	// Left Leg
 	composite(output, leftLeftLeg, 6, 20)
 
+	if opts.Square {
+		output = squareAndCenter(output)
+	}
+
 	return scale(output, opts.Scale)
 }
